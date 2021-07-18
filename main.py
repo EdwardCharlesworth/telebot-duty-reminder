@@ -84,17 +84,6 @@ def reminder(queue):
         # Add all the dutys that were printed to the end of the list
         for duty in dutysDone: dutys.append(duty)
 
-            #else:
-            #    break
-            # This is where you should set something up so
-            # that you don't run through the list constantly.
-            # Sort the list items by when they need to happen.
-            # Then, when they happen, move them to the end of
-            # the item list. So then you only need to check
-            # items until you find one where you don't need to
-            # do anything. Then all the following items don't
-            # need anything either.
-
         # Wait until it's time to check things again
         time.sleep(WAIT_TIME) 
 
