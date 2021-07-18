@@ -26,13 +26,13 @@ def c_new_duty(bot, queue, message):
     def weekday_handler(pm):
         weekday = pm.text
         data['weeknum'] = {
-            'Monday': 1,
-            'Tuesday': 2,
-            'Wednesday': 3,
-            'Thursday': 4,
-            'Friday': 5,
-            'Saturday': 6,
-            'Sunday': 7,
+            'Monday': 0,
+            'Tuesday': 1,
+            'Wednesday': 2,
+            'Thursday': 3,
+            'Friday': 4,
+            'Saturday': 5,
+            'Sunday': 6,
         }[weekday]
         bot.send_message(pm.chat.id, f"You will be reminded every {weekday}.")
 

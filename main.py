@@ -3,7 +3,7 @@ from threading import Thread
 import telebot
 import time
 from communicator import *
-
+import datetime
 
 with open('token.txt') as token_file:
     for token in token_file:
@@ -29,6 +29,16 @@ def communicator(queue):
 
 # A thread that reminds chats about events
 def reminder(queue):
+    data = {
+        'chat_id': 1234,
+        'type': 'new_duty',
+
+        'name': 'test_duty',
+        'day': 7,
+        'starting_date': datetime.datetime.utcnow(),
+        'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
+        'message': 'Du bist dran',
+    }
     while True:
         time.sleep(60*10)
         # Produce some data
