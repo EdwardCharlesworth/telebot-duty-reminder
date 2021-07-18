@@ -30,48 +30,58 @@ def communicator(queue):
 # A thread that reminds chats about events
 def reminder(queue):
 
-    data = {
+    data_length = 3
+    datas = [ {
         'chat_id': 1234,
         'type': 'new_duty',
 
         'name': 'test_duty',
         'frequency': datetime.timedelta(days=1),
-        'start_time': datetime.datetime.utcnow(),
+        'start_time': datetime.datetime.utcnow()-datetime.timedelta(seconds=i*2),
         'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
-        'message': 'Du bist dran',
+        'message': 'Du bist dran '+str(i),
     }
-    queue.put(data)
+    for i in range(data_length)]
 
-    items = []
+    for data in datas: queue.put(data)
 
-    WAIT_TIME = 5 # seconds
+    dutys = []
+
+    WAIT_TIME = 1 # seconds
     while True:
 
         # Check if there's anything in the queue
-        if not queue.empty():
-            print("Got new messages")
+        queueWasNotEmpty = not queue.empty()
+        while not queue.empty():
+            print("We have new messages")
 
             #New messages!
             data = queue.get()
 
             if data['type']=='new_duty':
-                items.append(chat_reminder_instance(data))
+                dutys.append(chat_reminder_instance(data))
 
-            #date_list = sort_function(date_list, data)
+        if queueWasNotEmpty:
+            dutys = sort_dutys(dutys)
 
-        # Check if you have any items at all
-        if len(items)==0:
-            print("No items found. Waiting 1 second.")
+        # Check if you have any dutys at all
+        if len(dutys)==0:
+            print("No dutys found. Waiting 1 second.")
             time.sleep(1)
             continue
         
         # Check if anything needs to run now
-        for item in items:
-            print("Looking through items")
-            if item.should_print_now():
-                print("Time to print")
-                message = item.print_message_and_cycle()
+        dutysDone = []
+        print("Looking through dutys")
+        for duty in dutys:
+            if duty.should_print_now():
+                dutyToDo = dutys.pop(0)
+                dutysDone.append(dutyToDo)
+                message = duty.print_message_and_cycle()
                 print(message)
+        # Add all the dutys that were printed to the end of the list
+        for duty in dutysDone: dutys.append(duty)
+
             #else:
             #    break
             # This is where you should set something up so
@@ -85,6 +95,14 @@ def reminder(queue):
 
         # Wait until it's time to check things again
         time.sleep(WAIT_TIME) 
+
+def sort_dutys(dutys):
+    datetimes = [duty.goal_datetime for duty in dutys]
+    ref = datetime.datetime.utcnow()
+    timedeltas = [(ref-dt).total_seconds() for dt in datetimes]
+    dutys = [duty for _,duty in sorted(zip(timedeltas,dutys))]
+    return dutys
+
 
 class chat_reminder_instance():
 
@@ -108,8 +126,9 @@ class chat_reminder_instance():
         member = self.roster.pop(0) #Pull the member whose turn it is
         message = member+": "+self.message#Write the message
         self.roster.append(member) #Add member whose turn it is to the roster
+        # Calculate the next time you need to write
         next_datetime = self.goal_datetime + datetime.timedelta(days=self.frequency)
-        self.goal_datetime = next_datetime
+        self.goal_datetime = next_datetime # Set that time
         return message
 
 
