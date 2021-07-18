@@ -79,6 +79,8 @@ def reminder(queue):
                 dutysDone.append(dutyToDo)
                 message = duty.print_message_and_cycle()
                 print(message)
+            else:
+                break
         # Add all the dutys that were printed to the end of the list
         for duty in dutysDone: dutys.append(duty)
 
