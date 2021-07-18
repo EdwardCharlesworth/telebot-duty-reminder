@@ -1,6 +1,7 @@
 import requests
 import json
 import telebot
+import datetime
 
 
 def c_greet(bot, message):
@@ -8,7 +9,16 @@ def c_greet(bot, message):
 
 
 def c_new_duty(bot, queue, message):
-    data = {}
+    data = {
+        'chat_id': message.chat.id,
+        'type': 'new_duty',
+
+        'name': None,
+        'day': 7,
+        'start_time': datetime.datetime.utcnow(),
+        'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
+        'message': 'Du bist dran',
+    }
 
     def get_user_input(message, function):
         bot.register_next_step_handler(message, function)
@@ -20,12 +30,12 @@ def c_new_duty(bot, queue, message):
         name = message.text
         data['name'] = name
 
-        sent_msg = bot.send_message(chat_id, f"Your name is {name}. On which weekday you want to be reminded?")
-        get_user_input(sent_msg, weekday_handler)
+        sent_msg = bot.send_message(chat_id, f"When should {name} start?")
+        get_user_input(sent_msg, start_time_handler)
 
-    def weekday_handler(pm):
+    def start_time_handler(pm):
         weekday = pm.text
-        data['weeknum'] = {
+        data['start_time'] = {
             'Monday': 0,
             'Tuesday': 1,
             'Wednesday': 2,
@@ -35,7 +45,6 @@ def c_new_duty(bot, queue, message):
             'Sunday': 6,
         }[weekday]
         bot.send_message(pm.chat.id, f"You will be reminded every {weekday}.")
-
 
     sent_msg = bot.send_message(message.chat.id, "What's your duty's name?")
 
