@@ -2,7 +2,7 @@ from queue import Queue
 from threading import Thread
 import telebot
 import time
-from communicator import communicate
+from communicator import *
 
 
 with open('token.txt') as token_file:
@@ -12,17 +12,25 @@ with open('token.txt') as token_file:
     bot = telebot.TeleBot(token)
 
 
-# A thread that consumes data
-def communicator(queue,):
-    while True:
-        queue.put(data)
+# A thread that communicates with chats
+def communicator(queue):
+
+    @bot.message_handler(commands=['greet'])
+    def greet(message):
+        c_greet(bot, message)
+
+    @bot.message_handler(commands=['new_duty'])
+    def new_duty(message):
+        c_new_duty(bot, queue, message)
+
+    bot.polling()
+    print('communicator end')
 
 
-# A thread that produces data
+# A thread that reminds chats about events
 def reminder(queue):
-    date_list = []
     while True:
-        time.sleep(60)
+        time.sleep(60*10)
         # Produce some data
         data = queue.get()
         date_list = sort_function(date_list, data)
