@@ -32,7 +32,7 @@ class DutyObject:
         message += 'Next Reminder Date: '+self.goal_datetime.strftime("%m/%d/%Y, %H:%M:%S")+';'
         message += 'Roster: '+self.make_roster_string()+';'
         message += 'Reminder message: ('+self.message+').'
-        return message
+        return self.send_message(message)
 
     def should_print_now(self):
         goal = self.goal_datetime
@@ -54,7 +54,7 @@ class DutyObject:
     def make_roster_message(self):
         message = ""
         for member in self.roster: message += member + ' '
-        return message
+        return self.send_message(message)
 
     def change_roster(self):
         # self.roster = whatever function basti has
@@ -63,7 +63,7 @@ class DutyObject:
     def change_message(self,message):
         self.message = message
         message = "Message is now: "+message
-        return message
+        return self.send_message(message)
 
     def swap_members(self,member1,member2):
         #Switching order of existing members
@@ -78,43 +78,43 @@ class DutyObject:
             message += " Could not find "+member2+"."
             ERROR = True
         if ERROR:
-            return message
+            return self.send_message(message)
         else:
             index1=self.roster.index(member1)
             index2=self.roster.index(member2)
             message = "Mitglieder "+member1+" und "+member2+" sind getauscht. Reinfolge ist jetzt: "
             message += self.make_roster_message()
-            return message
+            return self.send_message(message)
 
     def exchange_member(self,memberOld,memberNew):
         # If somebody moves out, for example
         if memberOld not in self.roster:
             message = "Could not find "+memberOld+"."
-            return message
+            return self.send_message(message)
         else:
             index = self.roster.index(memberOld)
             self.roster[index] = memberNew
             message = "Mitglied "+memberNew+" hat die Platz für "+memberOld+" genommen. Tschüss "+memberOld+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
             message += self.make_roster_message()
-            return message
+            return self.send_message(message)
 
     def delete_member(self,member):
         # If somebody moves out, for example
         if member not in self.roster:
             message = "Could not find "+member+"."
-            return message
+            return self.send_message(message)
         else:
             self.roster.pop(member)
             message = "Mitglied "+member+" war von Listen entfernt. Tschüss "+member+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
             message += self.make_roster_message()
-            return message
+            return self.send_message(message)
 
     def add_member(self,member):
         # If somebody moves in, for example
         self.roster.append(member)
         message = "Mitglied "+member+" war hinzugefügt. Hallo "+member+"! Reinfolge ist jetzt: "
         message += self.make_roster_message()
-        return message
+        return self.send_message(message)
 
     def send_message(self, message):
         self.bot.send_message(self.chat_id, message)
