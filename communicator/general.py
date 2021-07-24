@@ -15,6 +15,14 @@ class InputError(Exception):
     pass
 
 
+class AlreadyExists(InputError):
+    pass
+
+
+class IsNotPresent(InputError):
+    pass
+
+
 def check_for_exit(bot):
     def inner_check_for_exit(func):
         def wrapper(*args, **kwargs):
@@ -80,13 +88,18 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
                 # validate input
                 if is_in and post_value not in validation_list:
-                    raise InputError(f'{post_value} is not in {validation_list}')
+                    raise IsNotPresent(f'{post_value} is not in {validation_list}')
                 elif not is_in and post_value in validation_list:
-                    raise InputError(f'{post_value} is in {validation_list}')
+                    raise AlreadyExists(f'{post_value} is in {validation_list}')
 
             except Exception as e:
                 print(e)
-                sent_inner_msg = bot.reply_to(inner_message, 'Message could not be processed - please try again')
+                if isinstance(e, IsNotPresent):
+                    sent_inner_msg = bot.reply_to(inner_message, 'name does not exist - please try again')
+                elif isinstance(e, AlreadyExists):
+                    sent_inner_msg = bot.reply_to(inner_message, 'name already exists - please try again')
+                else:
+                    sent_inner_msg = bot.reply_to(inner_message, 'Message could not be processed - please try again')
                 bot.register_next_step_handler(sent_inner_msg, data_key_handler, current_info, data, infos,
                                                first_message=first_message, validation_list=validation_list,
                                                is_in=is_in)
@@ -123,6 +136,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
             is_in = False
             pick_type = next_info['pick_not_from']
 
+        pick_from_list = []
         if pick_type:
             if pick_type == 'duty':
                 # get all duties
@@ -138,7 +152,6 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
         # build message text
         message_text = next_info['message']+add_abort_message
-        pick_from_list = []
         if send_selection:
             for value in pick_from_list:
                 message_text += '\n'

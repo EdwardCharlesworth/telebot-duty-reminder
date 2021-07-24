@@ -13,6 +13,12 @@ def print_duty_list(dutys):
     for duty in dutys:
         print(duty.dump_information())
 
+
+def myconverter(o):
+    if isinstance(o, datetime.datetime):
+        return o.__str__()
+
+
 def save_dutys(dutys):
     with open("dutybot_database.json","w") as file:
         # ensure that bot is not dumped (not possible)
@@ -20,13 +26,13 @@ def save_dutys(dutys):
             {key: value
              for key, value in duty.__dict__.items() if key != 'bot'}
             for duty in dutys
-        ]))
+        ], default=myconverter))
 
 def load_dutys(bot):
     databaseName = "dutybot_database.json"
     try:
         with open(databaseName,"r") as file:
-            duty_dicts = json.load(file)
+            duty_dicts = json.load(file, default=myconverter)
     except:
         print("Could not find database ("+databaseName+"). Duty list is empty.")
         duty_dicts = []
