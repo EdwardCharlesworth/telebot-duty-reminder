@@ -30,20 +30,20 @@ def communicator(queue):
 # A thread that reminds chats about events
 def reminder(queue):
 
-    data_length = 3
-    datas = [ {
-        'chat_id': 1234,
-        'type': 'new_duty',
+    #data_length = 3
+    #datas = [ {
+    #    'chat_id': 1234,
+    #    'type': 'new_duty',
 
-        'name': 'test_duty',
-        'frequency': datetime.timedelta(days=1),
-        'start_time': datetime.datetime.utcnow()-datetime.timedelta(seconds=i*2),
-        'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
-        'message': 'Du bist dran '+str(i),
-    }
-    for i in range(data_length)]
+    #    'name': 'test_duty',
+    #    'frequency': datetime.timedelta(days=1),
+    #    'start_time': datetime.datetime.utcnow()-datetime.timedelta(seconds=i*2),
+    #    'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
+    #    'message': 'Du bist dran '+str(i),
+    #}
+    #for i in range(data_length)]
 
-    for data in datas: queue.put(data)
+    #for data in datas: queue.put(data)
 
     dutys = []
 
@@ -58,7 +58,10 @@ def reminder(queue):
             #New messages!
             data = queue.get()
 
-            if data['type']=='new_duty':
+            if any( [data[key] == None for key in data.keys()] ):
+                print("FOUND AN INCOMPLETE ENTRY")
+                continue
+            elif data['type']=='new_duty':
                 dutys.append(chat_reminder_instance(data))
 
         if queueWasNotEmpty:
