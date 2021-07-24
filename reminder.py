@@ -86,7 +86,7 @@ class DutyObject:
 
     def mitglied_austauschen(self,memberOld,memberNew):
         # If somebody moves out, for example
-        if member not in self.roster:
+        if memberOld not in self.roster:
             message += "Could not find "+memberOld+"."
             return message
         else:
