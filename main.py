@@ -4,7 +4,7 @@ import telebot
 import time
 
 from communicator import AbortInput, c_new_duty, c_greet
-from reminder import Duty, sort_dutys
+from reminder import DutyObject, sort_dutys, print_duty_list
 
 
 with open('token.txt') as token_file:
@@ -52,7 +52,12 @@ def reminder(queue):
                 print("FOUND AN INCOMPLETE ENTRY")
                 continue
             elif data['type']=='new_duty':
-                dutys.append(Duty(data))
+                dutys.append(DutyObject(data))
+            elif data['type']=='print_duty_list':
+                print_duty_list(dutys)
+                
+                
+
 
         if queueWasNotEmpty:
             dutys = sort_dutys(dutys)
