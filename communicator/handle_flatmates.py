@@ -13,14 +13,19 @@ swap_members_input_infos = [{
     'message': f"Please insert the second member name",
     'pick_from': 'members',
     'pre_func': str,
+}, {
+    'single_message': 'Flatmates were switched for one duty!',
 }]
 
 exchange_members_input_infos = [{
     'data_key': 'name',
     'message': "Which flatmate leaves?",
+    'pick_from': 'members',
     'pre_func': str,
 }, {
     'data_key': 'flatmates',
-    'message': f"Who's the ",
+    'message': f"Who's our new flatmate?",
     'pre_func': str,
+}, {
+    'single_message': 'Flatmates were exchanged for all duties!',
 }]

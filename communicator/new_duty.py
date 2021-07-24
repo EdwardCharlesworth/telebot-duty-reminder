@@ -46,5 +46,7 @@ new_duty_input_infos = [{
     'data_key': 'flatmates',
     'message': f"What are your flatmates? (order matters)",
     'pre_func': pre_find_flatmates,
+}, {
+    'single_message': 'A new duty was added for your chat!',
 }]
 

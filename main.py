@@ -6,6 +6,7 @@ import time
 from communicator.general import c_greet, get_user_input
 from communicator.new_duty import new_duty_input_infos
 from communicator.handle_flatmates import swap_members_input_infos, exchange_members_input_infos
+
 from reminder import DutyObject, sort_dutys, print_duty_list, save_dutys
 from reminder_temp.general import find_duty, find_chat_dutys
 
@@ -20,7 +21,7 @@ with open('token.txt') as token_file:
 # A thread that communicates with chats
 def communicator(queue):
 
-    @bot.message_handler(commands=['greet'])
+    @bot.message_handler(commands=['test'])
     def greet(message):
         c_greet(bot, message)
         print(message)

@@ -1,5 +1,8 @@
 import telebot
+import json
 from typing import List
+
+from dmup_and_load_json import load_dutys
 
 
 add_abort_message = "\n'exit' to abort"
@@ -58,6 +61,9 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
             try:
                 # get next info
                 next_info = infos.pop(0)
+                if 'single_message' in next_info.keys():
+                    _ = bot.send_message(chat_id, next_info['single_message'])
+                    next_info = infos.pop(0)
             except IndexError:
                 # end with sending data to reminder_temp
                 queue.put(data)
@@ -67,6 +73,10 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
             print(e)
             bot.reply_to(inner_message, 'Message could not be processed - please try again')
             return
+
+        if 'pick_from' in next_info.keys():
+            # load
+            json.loads()
 
         sent_inner_msg = bot.send_message(chat_id, next_info['message']+add_abort_message)
         bot.register_next_step_handler(sent_inner_msg, data_key_handler, next_info, data, infos)
