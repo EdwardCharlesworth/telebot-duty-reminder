@@ -6,12 +6,12 @@ swap_members_input_infos = [{
 }, {
     'data_key': 'member1',
     'message': f"Please insert the first member name",
-    'pick_from': 'members',
+    'pick_from': 'duty_members',
     'pre_func': str,
 }, {
     'data_key': 'member1',
     'message': f"Please insert the second member name",
-    'pick_from': 'members',
+    'pick_from': 'duty_members',
     'pre_func': str,
 }, {
     'single_message': 'Flatmates were switched for one duty!',

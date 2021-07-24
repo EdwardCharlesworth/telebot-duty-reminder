@@ -8,6 +8,9 @@ def dump_dutys(dutys, filepath=default_dump_path):
 
 
 def load_dutys(filepath=default_dump_path):
-    with open(filepath) as f:
-        duty = json.load(f)
-    return duty
+    try:
+        with open(filepath) as f:
+            dutys = json.load(f)
+        return dutys
+    except FileNotFoundError:
+        return []

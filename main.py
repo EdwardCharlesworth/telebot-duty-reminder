@@ -27,15 +27,15 @@ def communicator(queue):
 
     @bot.message_handler(commands=['new_duty'])
     def new_duty(message):
-        get_user_input(bot, queue, message, new_duty_input_infos, data_type='new_duty')
+        get_user_input(bot, queue, message, new_duty_input_infos.copy(), data_type='new_duty')
 
     @bot.message_handler(commands=['exchange_flatmates'])
     def change_flatmates(message):
-        get_user_input(bot, queue, message, exchange_members_input_infos, data_type='exchange_members')
+        get_user_input(bot, queue, message, exchange_members_input_infos.copy(), data_type='exchange_members')
 
     @bot.message_handler(commands=['swap_flatmates'])
     def swap_flatmates(message):
-        get_user_input(bot, queue, message, swap_members_input_infos, data_type='swap_members')
+        get_user_input(bot, queue, message, swap_members_input_infos.copy(), data_type='swap_members')
 
     bot.polling()
     print('communicator end')
@@ -44,7 +44,7 @@ def communicator(queue):
 # A thread that reminds chats about events
 def reminder(queue):
 
-    dutys = load_dutys()
+    dutys = load_dutys(bot)
 
     WAIT_TIME = 1  # seconds
     while True:

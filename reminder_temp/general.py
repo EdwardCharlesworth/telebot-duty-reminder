@@ -4,7 +4,7 @@ from reminder import DutyObject
 
 def find_duty(duty_name: str, dutys: List[DutyObject]):
     for duty in dutys:
-        if duty.duty_name == duty_name:
+        if duty.name == duty_name:
             return duty
     return False
 

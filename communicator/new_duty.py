@@ -29,6 +29,7 @@ def pre_frequency(day_string):
 new_duty_input_infos = [{
     'data_key': 'name',
     'message': "What's your duty's name?",
+    'pick_not_from': 'duty',
     'pre_func': str,
 }, {
     'data_key': 'start_time',
