@@ -20,6 +20,7 @@ def communicator(queue):
     @bot.message_handler(commands=['greet'])
     def greet(message):
         c_greet(bot, message)
+        print(message)
 
     @bot.message_handler(commands=['new_duty'])
     def new_duty(message):
@@ -52,11 +53,11 @@ def reminder(queue):
                 print("FOUND AN INCOMPLETE ENTRY")
                 continue
             elif data['type']=='new_duty':
-                dutys.append(DutyObject(data))
+                dutys.append(DutyObject(bot, data))
             elif data['type']=='print_duty_list':
                 print_duty_list(dutys)
-                
-                
+
+
 
 
         if queueWasNotEmpty:

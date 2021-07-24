@@ -12,9 +12,10 @@ def print_duty_list(dutys):
     for duty in dutys:
         print(duty.dump_information())
 
-class DutyObject():
+class DutyObject:
 
-    def __init__(self, item):
+    def __init__(self, bot, item):
+        self.bot = bot
         self.chat_id = item['chat_id']
         self.duty_name = item['name']
         self.frequency = item['frequency'].days/(24*60*4)
@@ -68,10 +69,10 @@ class DutyObject():
         #if two people do a one-time switch.
         message = ''
         ERROR = False
-        if member1 not in self.roster: 
+        if member1 not in self.roster:
             message += " Could not find "+member1+"."
             ERROR = True
-        if member2 not in self.roster: 
+        if member2 not in self.roster:
             message += " Could not find "+member2+"."
             ERROR = True
         if ERROR:
@@ -85,7 +86,7 @@ class DutyObject():
 
     def mitglied_austauschen(self,memberOld,memberNew):
         # If somebody moves out, for example
-        if member not in self.roster: 
+        if member not in self.roster:
             message += "Could not find "+memberOld+"."
             return message
         else:
@@ -97,7 +98,7 @@ class DutyObject():
 
     def mitglied_entfernen(self,member):
         # If somebody moves out, for example
-        if member not in self.roster: 
+        if member not in self.roster:
             message += "Could not find "+member+"."
             return message
         else:
@@ -113,4 +114,5 @@ class DutyObject():
         message += self.make_roster_message()
         return message
 
- 
+    def send_message(self, message):
+        self.bot.send_message(self.chat_id, message)
