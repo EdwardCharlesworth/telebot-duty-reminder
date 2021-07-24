@@ -56,9 +56,6 @@ def reminder(queue):
             elif data['type']=='print_duty_list':
                 print_duty_list(dutys)
                 
-                
-
-
         if queueWasNotEmpty:
             dutys = sort_dutys(dutys)
 
@@ -73,14 +70,13 @@ def reminder(queue):
         print("Looking through dutys")
         for duty in dutys:
             if duty.should_print_now():
-                dutyToDo = dutys.pop(0)
-                dutysDone.append(dutyToDo)
                 message = duty.print_message_and_cycle()
                 print(message)
             else:
                 break
         # Add all the dutys that were printed to the end of the list
-        for duty in dutysDone: dutys.append(duty)
+        # for duty in dutysDone: dutys.append(duty)
+        dutys = sort_dutys(dutys)
 
         # Wait until it's time to check things again
         time.sleep(WAIT_TIME) 
