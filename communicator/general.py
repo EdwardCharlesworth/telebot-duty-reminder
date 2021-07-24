@@ -2,7 +2,7 @@ import telebot
 import json
 from typing import List
 
-from dmup_and_load_json import load_dutys
+from dump_and_load_json import load_dutys
 
 
 add_abort_message = "\n'exit' to abort"

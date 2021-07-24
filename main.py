@@ -11,12 +11,11 @@ from reminder import DutyObject, sort_dutys, print_duty_list, save_dutys, load_d
 from reminder_temp.general import find_duty, find_chat_dutys
 
 
-with open('token.txt') as token_file:
+with open('./token.txt') as token_file:
     for token in token_file:
         break
-
+    token = token.rstrip()
     bot = telebot.TeleBot(token)
-
 
 # A thread that communicates with chats
 def communicator(queue):
