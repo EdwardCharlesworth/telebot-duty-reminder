@@ -29,6 +29,13 @@ def communicator(queue):
         except AbortInput:
             bot.send_message(message.chat.id, f"Command was aborted.")
 
+    @bot.message_handler(commands=['change flatmates'])
+    def change_flatmates(message):
+        try:
+            c_change_flatmates(bot, queue, message)
+        except AbortInput:
+            bot.send_message(message.chat.id, f"Command was aborted.")
+
     bot.polling()
     print('communicator end')
 

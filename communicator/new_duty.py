@@ -5,13 +5,6 @@ import datetime
 import re
 
 
-max_tries = 5
-
-
-class AbortInput(Exception):
-    pass
-
-
 def c_greet(bot, message):
     bot.send_message(message.chat.id, 'Hello there!')
 
@@ -103,7 +96,7 @@ def pre_start_time(start_time):
 
 
 def pre_find_flatmates(flatmates_string):
-    flatmates_list = re.split(',| |/', flatmates_string)
+    flatmates_list = re.split(', |,| |/', flatmates_string)
     return flatmates_list
 
 

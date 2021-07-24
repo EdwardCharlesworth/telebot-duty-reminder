@@ -47,7 +47,7 @@ class DutyObject:
         # Calculate the next time you need to write
         next_datetime = self.goal_datetime + datetime.timedelta(days=self.frequency)
         self.goal_datetime = next_datetime # Set that time
-        return message
+        return self.send_message(message)
 
     def make_roster_message(self):
         message = ""
