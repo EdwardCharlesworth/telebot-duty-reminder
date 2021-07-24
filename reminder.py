@@ -63,7 +63,7 @@ class DutyObject:
         message = "Message is now: "+message
         return message
 
-    def mitglied_tauschen(self,member1,member2):
+    def swap_members(self,member1,member2):
         #Switching order of existing members
         #One problem here is that you really should afterwards go back to the original order
         #if two people do a one-time switch.
@@ -80,37 +80,37 @@ class DutyObject:
         else:
             index1=self.roster.index(member1)
             index2=self.roster.index(member2)
-            message = "Mitglieder "+membe1+" und "+member2+" sind getauscht. Reinfolge ist jetzt: "
+            message = "Mitglieder "+member1+" und "+member2+" sind getauscht. Reinfolge ist jetzt: "
             message += self.make_roster_message()
             return message
 
-    def mitglied_austauschen(self,memberOld,memberNew):
+    def exchange_member(self,memberOld,memberNew):
         # If somebody moves out, for example
         if memberOld not in self.roster:
-            message += "Could not find "+memberOld+"."
+            message = "Could not find "+memberOld+"."
             return message
         else:
             index = self.roster.index(memberOld)
             self.roster[index] = memberNew
-            message += "Mitglied "+memberNew+" hat die Platz für "+memberOld+" genommen. Tschüss "+memberOld+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
+            message = "Mitglied "+memberNew+" hat die Platz für "+memberOld+" genommen. Tschüss "+memberOld+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
             message += self.make_roster_message()
             return message
 
-    def mitglied_entfernen(self,member):
+    def delete_member(self,member):
         # If somebody moves out, for example
         if member not in self.roster:
-            message += "Could not find "+member+"."
+            message = "Could not find "+member+"."
             return message
         else:
             self.roster.pop(member)
-            message += "Mitglied "+member+" war von Listen entfernt. Tschüss "+member+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
+            message = "Mitglied "+member+" war von Listen entfernt. Tschüss "+member+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
             message += self.make_roster_message()
             return message
 
-    def mitglied_hinzufuegen(self,member):
+    def add_member(self,member):
         # If somebody moves in, for example
         self.roster.append(member)
-        message += "Mitglied "+member+" war hinzugefügt. Hallo "+member+"! Reinfolge ist jetzt: "
+        message = "Mitglied "+member+" war hinzugefügt. Hallo "+member+"! Reinfolge ist jetzt: "
         message += self.make_roster_message()
         return message
 
