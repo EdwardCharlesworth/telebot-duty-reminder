@@ -2,6 +2,14 @@ import requests
 import json
 import telebot
 import datetime
+import re
+
+
+max_tries = 5
+
+
+class AbortInput(Exception):
+    pass
 
 
 def c_greet(bot, message):
@@ -9,55 +17,93 @@ def c_greet(bot, message):
 
 
 def c_new_duty(bot, queue, message):
+    chat_id = message.chat.id
+
     data = {
-        'chat_id': message.chat.id,
+        'chat_id': chat_id,
         'type': 'new_duty',
 
-        'name': None,
-        'day': 7,
+        'temp_input': None,
+
+        'name': 'defaultname',
         'start_time': datetime.datetime.utcnow(),
-        'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
+        'frequency': datetime.timedelta(days=1),
         'message': 'Du bist dran',
+        'flatmates': ['Ed', 'Clemens', 'Linda', 'Basti'],
     }
 
-    def get_user_input(message, function):
-        bot.register_next_step_handler(message, function)
+    infos = [{
+        'key': 'name',
+        'message': "What's your duty's name?",
+        'pre_func': [str],
+    }, {
+        'key': 'start_time',
+        'message': f"When should the duty start (HH:MM dd.mm.yyyy)?",
+        'pre_func': [pre_start_time],
+    }, {
+        'key': 'frequency',
+        'message': f"In which frequency do you want to be reminded (in days)?",
+        'pre_func': [int, datetime.timedelta],
+    }, {
+#        'key': 'message',
+#        'message': f"Please enter a message to ?",
+#        'pre_func': [str],
+#    }, {
+        'key': 'flatmates',
+        'message': f"What are your flatmates (order matters)?",
+        #'message': f"Add a name of a flatmate (... or exit with 'exit').",
+        'pre_func': [find_flatmates],
+        #'iterations': 50,
+    }]
 
-    def name_handler(message):
-        chat_id = message.chat.id
-        # house = get_house(houses, chat_id, bot)
-        # bot.register_next_step_handler(sent_msg, name_handler)
-        name = message.text
-        data['name'] = name
+    def key_handler(message, current_info, data, infos):
+        """
 
-        sent_msg = bot.send_message(chat_id, f"When should {name} start?")
-        get_user_input(sent_msg, start_time_handler)
+        :param message:
+        :param current_info:    dict with infos how the next answer should be processed
+        :param data:            dict that should be filled for reminder
+        :param infos:           list(dicts) that will be used to get user input (for data)
+        :return:
+        """
+        value = message.text[1:]
+        if value == 'exit':
+            return
 
-    def start_time_handler(pm):
-        weekday = pm.text
-        data['start_time'] = {
-            'Monday': 0,
-            'Tuesday': 1,
-            'Wednesday': 2,
-            'Thursday': 3,
-            'Friday': 4,
-            'Saturday': 5,
-            'Sunday': 6,
-        }[weekday]
-        bot.send_message(pm.chat.id, f"You will be reminded every {weekday}.")
+        # apply individual functions to input value
+        for pre_func in current_info['pre_func']:
+            value = pre_func(value)
+        data[current_info['key']] = value
 
-    sent_msg = bot.send_message(message.chat.id, "What's your duty's name?")
+        try:
+            # get next info
+            current_info = infos.pop(0)
+        except IndexError:
+            # end with sending data to reminder
+            queue.put(data)
+            return
 
-    get_user_input(sent_msg, name_handler)  # Next message will call the name_handler function
+        sent_msg = bot.reply_to(message, current_info['message'])
+        bot.register_next_step_handler(sent_msg, key_handler, current_info, data, infos)
 
-    queue.put(data)
+    current_info = infos.pop(0)
+    sent_msg = bot.reply_to(message, current_info['message'])
+    bot.register_next_step_handler(sent_msg, key_handler, current_info, data, infos)
+
+
 
 
 # ### helpers
 
+def pre_start_time(start_time):
+    start_time = datetime.datetime.strptime(start_time, '%H:%M %d.%m.%Y')
+    if datetime.datetime.utcnow().date() > start_time.date():
+        raise NotImplementedError
+    return start_time
 
 
-
+def find_flatmates(flatmates_string):
+    flatmates_list = re.split(',| |/', flatmates_string)
+    return flatmates_list
 
 
 ### for later use
