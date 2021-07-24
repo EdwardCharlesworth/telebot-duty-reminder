@@ -7,7 +7,7 @@ from communicator.general import c_greet, get_user_input
 from communicator.new_duty import new_duty_input_infos
 from communicator.handle_flatmates import swap_members_input_infos, exchange_members_input_infos
 
-from reminder import DutyObject, sort_dutys, print_duty_list, save_dutys
+from reminder import DutyObject, sort_dutys, print_duty_list, save_dutys, load_dutys
 from reminder_temp.general import find_duty, find_chat_dutys
 
 
@@ -45,7 +45,7 @@ def communicator(queue):
 # A thread that reminds chats about events
 def reminder(queue):
 
-    dutys = []
+    dutys = load_dutys()
 
     WAIT_TIME = 1  # seconds
     while True:
