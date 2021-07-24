@@ -17,9 +17,16 @@ def save_dutys(dutys):
     with open("dutybot_database.json","w") as file:
         file.write(json.dumps([duty.__dict__ for duty in dutys]))
 
-#def load_dutys():
-#    with open("dutybot_database.json","r") as file:
-#        json.loads(file.read()
+def load_dutys():
+    databaseName = "dutybot_database.json"
+    try:
+        with open(databaseName,"r") as file:
+            dutys = json.load(file)
+    except:
+        print("Could not find database ("+databaseName+"). Duty list is empty.")
+        dutys = []
+    finally:
+        return dutys
 
 class DutyObject:
 
