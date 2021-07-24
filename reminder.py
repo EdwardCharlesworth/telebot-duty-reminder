@@ -1,5 +1,5 @@
 import datetime
-
+import json
 
 def sort_dutys(dutys):
     datetimes = [duty.goal_datetime for duty in dutys]
@@ -13,6 +13,13 @@ def print_duty_list(dutys):
     for duty in dutys:
         print(duty.dump_information())
 
+def save_dutys(dutys):
+    with open("dutybot_database.json","w") as file:
+        file.write(json.dumps([duty.__dict__ for duty in dutys]))
+
+#def load_dutys():
+#    with open("dutybot_database.json","r") as file:
+#        json.loads(file.read()
 
 class DutyObject:
 
@@ -118,3 +125,5 @@ class DutyObject:
 
     def send_message(self, message):
         self.bot.send_message(self.chat_id, message)
+
+

@@ -6,7 +6,7 @@ import time
 from communicator.general import c_greet, get_user_input
 from communicator.new_duty import new_duty_input_infos
 from communicator.handle_flatmates import swap_members_input_infos, exchange_members_input_infos
-from reminder import DutyObject, sort_dutys, print_duty_list
+from reminder import DutyObject, sort_dutys, print_duty_list, save_dutys
 from reminder_temp.general import find_duty, find_chat_dutys
 
 
@@ -80,6 +80,7 @@ def reminder(queue):
 
         if queueWasNotEmpty:
             dutys = sort_dutys(dutys)
+            save_dutys(dutys)
 
         # Check if you have any dutys at all
         if len(dutys)==0:
