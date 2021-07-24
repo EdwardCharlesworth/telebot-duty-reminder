@@ -52,7 +52,6 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
     :return:
     """
     chat_id = message.chat.id
-    pick_from_duty_name = None
 
     data = get_default_data(data_type)
     data.update({
@@ -69,7 +68,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
     @check_for_exit(bot)
     def data_key_handler(inner_message, current_info, data, infos, first_message=False,
-                         validation_list=None, is_in=None):
+                         validation_list=None, is_in=None, pick_type=None):
         """
 
         :param inner_message:
@@ -143,7 +142,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                 pick_from_list = get_duty_names(chat_duty_dicts)
             elif pick_type == 'duty_members':
                 # get members of one duty
-                pick_from_list = find_duty_in_duty_dicts(pick_from_duty_name, chat_duty_dicts)['flatmates']
+                pick_from_list = find_duty_in_duty_dicts(data['name'], chat_duty_dicts)['flatmates']
             elif pick_type == 'members':
                 # get all members
                 pick_from_list = find_all_members_of_chat(chat_duty_dicts)
@@ -159,7 +158,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
         sent_inner_msg = bot.send_message(chat_id, message_text)
         bot.register_next_step_handler(sent_inner_msg, data_key_handler, next_info, data, infos,
-                                       validation_list=pick_from_list, is_in=is_in)
+                                       validation_list=pick_from_list, is_in=is_in, pick_type=pick_type)
 
     current_info = infos.pop(0)
     data_key_handler(message, current_info, data, infos, first_message=True)

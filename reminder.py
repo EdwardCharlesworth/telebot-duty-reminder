@@ -32,13 +32,14 @@ def load_dutys(bot):
     databaseName = "dutybot_database.json"
     try:
         with open(databaseName,"r") as file:
-            duty_dicts = json.load(file, default=myconverter)
+            duty_dicts = json.load(file)
     except:
         print("Could not find database ("+databaseName+"). Duty list is empty.")
         duty_dicts = []
 
     dutys = []
     for duty_dict in duty_dicts:
+        duty_dict['start_time'] = datetime.datetime.strptime(duty_dict['start_time'], "%Y-%m-%d %H:%M:%S")
         dutys.append(DutyObject(bot, item=duty_dict))
 
     return dutys
@@ -86,7 +87,7 @@ class DutyObject:
     def make_roster_message(self):
         message = ""
         for member in self.flatmates: message += member + ' '
-        return self.send_message(message)
+        return message
 
     def change_roster(self):
         # self.roster = whatever function basti has
@@ -114,6 +115,8 @@ class DutyObject:
         else:
             index1=self.flatmates.index(member1)
             index2=self.flatmates.index(member2)
+            self.flatmates[index1] = member2
+            self.flatmates[index2] = member1
             message = "Mitglieder "+member1+" und "+member2+" sind getauscht. Reinfolge ist jetzt: "
             message += self.make_roster_message()
             return self.send_message(message)

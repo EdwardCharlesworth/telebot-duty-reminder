@@ -67,12 +67,12 @@ def reminder(queue):
             elif data['type'] == 'exchange_members':
                 chat_dutys = find_chat_dutys(data['chat_id'], dutys)
                 for duty in chat_dutys:
-                    duty.exchange_member(data['new_member'], data['old_member'])
+                    duty.exchange_member(data['old_member'], data['new_member'])
 
             # swap members for one duty
             elif data['type'] == 'swap_members':
                 chat_dutys = find_chat_dutys(data['chat_id'], dutys)
-                duty = find_duty(data['duty_name'], chat_dutys)
+                duty = find_duty(data['name'], chat_dutys)
                 duty.swap_members(data['member1'], data['member2'])
 
             elif data['type'] == 'print_duty_list':
