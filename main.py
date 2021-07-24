@@ -3,10 +3,11 @@ from threading import Thread
 import telebot
 import time
 
-from communicator.general import AbortInput, c_greet
-from communicator.new_duty import c_new_duty
-from communicator.handle_flatmates import c_change_flatmates
+from communicator.general import c_greet, get_user_input
+from communicator.new_duty import new_duty_input_infos
+from communicator.handle_flatmates import swap_members_input_infos, exchange_members_input_infos
 from reminder import DutyObject, sort_dutys, print_duty_list
+from reminder_temp.general import find_duty, find_chat_dutys
 
 
 with open('token.txt') as token_file:
@@ -26,17 +27,15 @@ def communicator(queue):
 
     @bot.message_handler(commands=['new_duty'])
     def new_duty(message):
-        try:
-            c_new_duty(bot, queue, message)
-        except AbortInput:
-            bot.send_message(message.chat.id, f"Command was aborted.")
+        get_user_input(bot, queue, message, new_duty_input_infos, data_type='new_duty')
 
-    @bot.message_handler(commands=['change flatmates'])
+    @bot.message_handler(commands=['exchange_flatmates'])
     def change_flatmates(message):
-        try:
-            c_change_flatmates(bot, queue, message)
-        except AbortInput:
-            bot.send_message(message.chat.id, f"Command was aborted.")
+        get_user_input(bot, queue, message, exchange_members_input_infos, data_type='exchange_members')
+
+    @bot.message_handler(commands=['swap_flatmates'])
+    def swap_flatmates(message):
+        get_user_input(bot, queue, message, swap_members_input_infos, data_type='swap_members')
 
     bot.polling()
     print('communicator end')
@@ -61,9 +60,22 @@ def reminder(queue):
             if any( [data[key] == None for key in data.keys()] ):
                 print("FOUND AN INCOMPLETE ENTRY")
                 continue
-            elif data['type']=='new_duty':
+            elif data['type'] == 'new_duty':
                 dutys.append(DutyObject(bot, data))
-            elif data['type']=='print_duty_list':
+
+            # exchange members for all duties
+            elif data['type'] == 'exchange_members':
+                chat_dutys = find_chat_dutys(data['chat_id'], dutys)
+                for duty in chat_dutys:
+                    duty.exchange_member(data['new_member'], data['old_member'])
+
+            # swap members for one duty
+            elif data['type'] == 'swap_members':
+                chat_dutys = find_chat_dutys(data['chat_id'], dutys)
+                duty = find_duty(data['duty_name'], chat_dutys)
+                duty.swap_members(data['member1'], data['member2'])
+
+            elif data['type'] == 'print_duty_list':
                 print_duty_list(dutys)
 
         if queueWasNotEmpty:

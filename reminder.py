@@ -8,9 +8,11 @@ def sort_dutys(dutys):
     dutys = [duty for _,duty in sorted(zip(timedeltas,dutys))]
     return dutys
 
+
 def print_duty_list(dutys):
     for duty in dutys:
         print(duty.dump_information())
+
 
 class DutyObject:
 

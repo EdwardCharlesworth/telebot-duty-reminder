@@ -1,14 +1,26 @@
-def c_change_flatmates(bot, queue, message):
-    chat_id = message.chat.id
+swap_members_input_infos = [{
+    'data_key': 'name',
+    'message': "In which duty do you want to swap members?",
+    'pick_from': 'duty',
+    'pre_func': str,
+}, {
+    'data_key': 'member1',
+    'message': f"Please insert the first member name",
+    'pick_from': 'members',
+    'pre_func': str,
+}, {
+    'data_key': 'member1',
+    'message': f"Please insert the second member name",
+    'pick_from': 'members',
+    'pre_func': str,
+}]
 
-    data = {
-        'chat_id': chat_id,
-        'type': 'new_duty',
-
-        'name': None,  # 'defaultname',
-        'start_time': None,  # datetime.datetime.utcnow(),
-        'frequency': None,  # datetime.timedelta(days=1),
-        'message': 'JUST DO IT',
-        'flatmates': None,  # ['Ed', 'Clemens', 'Linda', 'Basti'],
-    }
-
+exchange_members_input_infos = [{
+    'data_key': 'name',
+    'message': "Which flatmate leaves?",
+    'pre_func': str,
+}, {
+    'data_key': 'flatmates',
+    'message': f"Who's the ",
+    'pre_func': str,
+}]
