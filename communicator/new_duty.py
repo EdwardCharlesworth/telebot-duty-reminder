@@ -4,9 +4,7 @@ import telebot
 import datetime
 import re
 
-
-def c_greet(bot, message):
-    bot.send_message(message.chat.id, 'Hello there!')
+from communicator.general import AbortInput, add_abort_message
 
 
 def c_new_duty(bot, queue, message):
@@ -57,7 +55,7 @@ def c_new_duty(bot, queue, message):
         try:
             value = message.text[1:]
             if value == 'exit':
-                return
+                raise AbortInput
 
             # apply individual functions to input value
             for pre_func in current_info['pre_func']:
@@ -77,11 +75,11 @@ def c_new_duty(bot, queue, message):
             bot.reply_to(message, 'Message could not be processed - please try again')
 
 
-        sent_msg = bot.send_message(chat_id, current_info['message'])
+        sent_msg = bot.send_message(chat_id, current_info['message']+add_abort_message)
         bot.register_next_step_handler(sent_msg, key_handler, current_info, data, infos)
 
     current_info = infos.pop(0)
-    sent_msg = bot.send_message(chat_id, current_info['message'])
+    sent_msg = bot.send_message(chat_id, current_info['message']+add_abort_message)
     bot.register_next_step_handler(sent_msg, key_handler, current_info, data, infos)
 
 
@@ -98,13 +96,3 @@ def pre_start_time(start_time):
 def pre_find_flatmates(flatmates_string):
     flatmates_list = re.split(', |,| |/', flatmates_string)
     return flatmates_list
-
-
-### for later use
-#from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-#def gen_markup():
-#    markup = InlineKeyboardMarkup()
-#    markup.row_width = 2
-#    markup.add(InlineKeyboardButton("Yes", callback_data="cb_yes"),
-#                               InlineKeyboardButton("No", callback_data="cb_no"))
-#    return markup

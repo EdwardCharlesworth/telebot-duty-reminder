@@ -3,7 +3,9 @@ from threading import Thread
 import telebot
 import time
 
-from communicator import AbortInput, c_new_duty, c_greet
+from communicator.general import AbortInput, c_greet
+from communicator.new_duty import c_new_duty
+from communicator.handle_flatmates import c_change_flatmates
 from reminder import DutyObject, sort_dutys, print_duty_list
 
 
