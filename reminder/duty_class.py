@@ -13,7 +13,7 @@ def myconverter(o):
 
 
 def save_dutys(dutys):
-    with open("../dutybot_database.json", "w") as file:
+    with open("dutybot_database.json", "w") as file:
         # ensure that bot is not dumped (not possible)
         dump_str = json.dumps([
             {key: value
