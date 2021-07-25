@@ -3,7 +3,7 @@ import json
 from typing import List
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from config import add_abort_message
+from config import add_abort_message, no, yes
 
 from communicator.helper import get_default_data, load_dutys_of_chat, \
     find_duty_in_duty_dicts, find_all_members_of_chat, get_duty_names
@@ -93,6 +93,10 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
         :param current_info:    dict with infos how the next answer should be processed
         :param data:            dict that should be filled for reminder_temp
         :param infos:           list(dicts) that will be used to get user input (for data)
+        :param first_message:   if False: will check for input in inner_message
+        :param validation_list: list of (not-)possible inputs
+        :param is_in:           if True: error if user input is not in validation_list
+                                if False: error if user input is in validation_list
         :return:
         """
         if not first_message:
@@ -128,13 +132,24 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                 # get next info
                 next_info = infos.pop(0)
                 if 'single_message' in next_info.keys():
+
+                    # get message
+                    raw_message = next_info['single_message']
+                    if not yes == data.get('confirm', yes) and 'single_abort_message' in next_info.keys():
+                        raw_message = next_info['single_abort_message']
+
+                    # get format_dict for message
                     format_dict = {}
                     if next_info.get('insert_info', False):
                         format_dict = find_duty_in_duty_dicts(data['name'], chat_duty_dicts)
 
-                    message = next_info['single_message'].format(**format_dict) + add_abort_message
-                    _ = bot.send_message(chat_id, message)
+                    _ = bot.send_message(chat_id, raw_message.format(**format_dict))
+
+                    if not yes == data.get('confirm', yes):
+                        return
+
                     next_info = infos.pop(0)
+
             except IndexError:
                 # end with sending data to reminder_temp
                 if data['type'] != 'NOTHING':
@@ -179,7 +194,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                 if all_selections:
                     message_text += '\n"ALL" for all'
 
-        validation_list = select_list
+        validation_list = next_info.get('options', select_list)
         if all_selections:
             validation_list.append('ALL')
 
@@ -187,7 +202,6 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
         def callback_query(call):
             data_key_handler(call, next_info, data, infos,
                              validation_list=validation_list, is_in=is_in)
-            print(validation_list)
             bot.answer_callback_query(call.id, call.data)
 
         if keyboard_input:

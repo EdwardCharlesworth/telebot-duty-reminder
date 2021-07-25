@@ -1,6 +1,8 @@
 import datetime
 import re
 
+from config import yes_no_options, string_to_bool
+
 
 def pre_start_time(start_time):
     start_time = datetime.datetime.strptime(start_time, '%H:%M %d.%m.%y')
@@ -66,10 +68,14 @@ delete_duty_input_infos = [{
     'pre_func': str,
 }, {
     'message': f"Are you sure you want to delete this duty?",
-    'data_key': 'place_holder',
+    'data_key': 'confirm',
+    'send_selection': True,
+    'options': yes_no_options,
+    'is_in': True,
     'pre_func': str,
 }, {
-    'single_message': 'The duty was deleted!',
+    'single_message': 'Duty was deleted!',
+    'single_abort_message': 'Duty was not deleted!',
 }]
 
 

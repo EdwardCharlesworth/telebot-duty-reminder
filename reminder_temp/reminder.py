@@ -13,7 +13,7 @@ def myconverter(o):
 
 
 def save_dutys(dutys):
-    with open("dutybot_database.json","w") as file:
+    with open("../dutybot_database.json", "w") as file:
         # ensure that bot is not dumped (not possible)
         file.write(json.dumps([
             {key: value
@@ -44,7 +44,7 @@ class DutyObject:
         self.chat_id = item['chat_id']  # @Ed: don't change 'chat_id' to a different name!!!
         self.name = item['name']  # @Ed: don't change 'name' to a different name!!!
         if isinstance(item['frequency'], datetime.timedelta):
-            self.frequency = item['frequency'].days/(24*60*4)
+            self.frequency = item['frequency'].days/(24*60*4)  # TODO finalize
         else:
             self.frequency = item['frequency']
         self.start_time = item['start_time']

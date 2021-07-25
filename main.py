@@ -1,6 +1,5 @@
 from queue import Queue
 from threading import Thread
-import telebot
 import time
 
 from custom_telebot import CustomTeleBot
@@ -12,7 +11,7 @@ from communicator.handle_duties import new_duty_input_infos, delete_duty_input_i
 from communicator.handle_flatmates import swap_members_input_infos, exchange_member_input_infos, \
     add_member_input_infos, add_duty_member_input_infos, remove_member_input_infos
 
-from reminder import DutyObject, print_duty_list, save_dutys, load_dutys
+from reminder_temp.reminder import DutyObject, save_dutys, load_dutys
 from reminder_temp.general import find_duty, find_chat_dutys
 
 
@@ -132,7 +131,7 @@ def reminder(queue):
 
             elif data['type'] == 'delete_duty':
                 for duty in find_chat_dutys(data['chat_id'], dutys):
-                    if data['name'] == 'ALL' or data['name'] == duty['name']:
+                    if data['name'] == 'ALL' or data['name'] == duty.name:
                         dutys.remove(duty)
                 save_dutys(dutys)
 
@@ -170,14 +169,14 @@ def reminder(queue):
 
         # Check if you have any dutys at all
         if len(dutys)==0:
-            print("No dutys found. Waiting 1 second.")
-            time.sleep(1)
+            # print("No dutys found. Waiting 1 second.")
+            time.sleep(1)  # TODO finalize
             continue
         
         # Check if anything needs to run now
         dutysDone = []
         something_was_updated = False
-        print("Looking through dutys")
+        # print("Looking through dutys")
         for duty in dutys:
             if duty.should_print_now():
                 message = duty.print_message_and_cycle()
@@ -192,6 +191,8 @@ def reminder(queue):
 
         # Wait until it's time to check things again
         time.sleep(WAIT_TIME) 
+
+    print('reminder end')
 
 
 # Create the shared queue and launch both threads
