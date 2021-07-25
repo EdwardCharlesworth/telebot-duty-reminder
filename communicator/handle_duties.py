@@ -1,7 +1,7 @@
 import datetime
 import re
 
-from config import yes_no_options, string_to_bool
+from config import yes_no_options
 
 
 def pre_start_time(start_time):
