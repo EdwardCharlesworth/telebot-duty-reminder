@@ -4,6 +4,7 @@ import time
 
 from custom_telebot import CustomTeleBot
 from dump_and_load_json import load_dutys, save_dutys
+from prod_help import endless_try
 
 from communicator.helper import load_dutys_of_chat
 from communicator.general import c_greet, get_user_input
@@ -24,6 +25,7 @@ with open('./token.txt') as token_file:
 
 
 # A thread that communicates with chats
+@endless_try
 def communicator(queue):
 
     # handle duties
@@ -108,6 +110,7 @@ def communicator(queue):
 
 
 # A thread that reminds chats about events
+@endless_try
 def reminder(queue):
 
     dutys = load_dutys(bot)
