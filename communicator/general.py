@@ -61,14 +61,13 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
     chat_duty_dicts = []
     for info in infos:
-        if 'pick_from' in info.keys() \
-                or 'pick_not_from' in info.keys():
+        if 'select_type' in info.keys():
             chat_duty_dicts = load_dutys_of_chat(chat_id)
             break
 
     @check_for_exit(bot)
     def data_key_handler(inner_message, current_info, data, infos, first_message=False,
-                         validation_list=None, is_in=None, pick_type=None):
+                         validation_list=None, is_in=None):
         """
 
         :param inner_message:
@@ -109,56 +108,60 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                 # get next info
                 next_info = infos.pop(0)
                 if 'single_message' in next_info.keys():
-                    _ = bot.send_message(chat_id, next_info['single_message'])
+                    format_dict = {}
+                    if next_info.get('insert_info', False):
+                        format_dict = find_duty_in_duty_dicts(data['name'], chat_duty_dicts)
+                    _ = bot.send_message(chat_id, next_info['single_message'].format(**format_dict))
                     next_info = infos.pop(0)
             except IndexError:
                 # end with sending data to reminder_temp
-                queue.put(data)
+                if data['type'] != 'NOTHING':
+                    queue.put(data)
                 return
 
         else:
             next_info = current_info
 
-        send_selection = None
-        is_in = None
-        pick_type = None
+        send_selection = next_info.get('send_selection', None)
+        is_in = next_info.get('is_in', None)
+        select_type = next_info.get('select_type', None)
+        all_selections = next_info.get('ALL', None)
 
-        if 'pick_from' in next_info.keys():
-            # prepare output of list-like information about current duties
-            send_selection = True
-            is_in = True
-            pick_type = next_info['pick_from']
-
-        elif 'pick_not_from' in next_info.keys():
-            # prepare checking for existing objects
-            send_selection = False
-            is_in = False
-            pick_type = next_info['pick_not_from']
-
-        pick_from_list = []
-        if pick_type:
-            if pick_type == 'duty':
+        select_list = []
+        pre_list_message_text = ''
+        if select_type:
+            if select_type == 'duty':
                 # get all duties
-                pick_from_list = get_duty_names(chat_duty_dicts)
-            elif pick_type == 'duty_members':
+                select_list = get_duty_names(chat_duty_dicts)
+                pre_list_message_text = '\nCurrent duties:'
+            elif select_type == 'duty_member':
                 # get members of one duty
-                pick_from_list = find_duty_in_duty_dicts(data['name'], chat_duty_dicts)['flatmates']
-            elif pick_type == 'members':
+                select_list = find_duty_in_duty_dicts(data['name'], chat_duty_dicts)['flatmates']
+                pre_list_message_text = '\nCurrent duty members:'
+            elif select_type == 'member':
                 # get all members
-                pick_from_list = find_all_members_of_chat(chat_duty_dicts)
+                select_list = find_all_members_of_chat(chat_duty_dicts)
+                pre_list_message_text = '\nAll members:'
             else:
                 raise NotImplementedError
 
         # build message text
         message_text = next_info['message']+add_abort_message
-        if send_selection:
-            for value in pick_from_list:
+        if send_selection and len(select_list) > 0:
+            message_text += pre_list_message_text
+            for value in select_list:
                 message_text += '\n'
                 message_text += str(value)
+            if all_selections:
+                message_text += '\n"ALL" for all'
+
+        validation_list = select_list
+        if all_selections:
+            validation_list.append('ALL')
 
         sent_inner_msg = bot.send_message(chat_id, message_text)
         bot.register_next_step_handler(sent_inner_msg, data_key_handler, next_info, data, infos,
-                                       validation_list=pick_from_list, is_in=is_in, pick_type=pick_type)
+                                       validation_list=validation_list, is_in=is_in)
 
     current_info = infos.pop(0)
     data_key_handler(message, current_info, data, infos, first_message=True)

@@ -4,7 +4,7 @@ from dump_and_load_json import load_dutys
 def get_default_data(data_type):
     data = {}
     if data_type == 'new_duty':
-        data = {'message': 'JUST DO IT'}
+        data = {'message': '{flatmate}! your next in line for {name}'}
     return data
 
 

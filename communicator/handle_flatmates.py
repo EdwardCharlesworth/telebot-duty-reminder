@@ -1,31 +1,100 @@
 swap_members_input_infos = [{
-    'data_key': 'name',
     'message': "In which duty do you want to swap members?",
-    'pick_from': 'duty',
+    'data_key': 'name',
+    'select_type': 'duty',
+    'send_selection': True,
+    'is_in': True,
     'pre_func': str,
 }, {
-    'data_key': 'member1',
     'message': f"Please insert the first member name",
-    'pick_from': 'duty_members',
+    'data_key': 'member1',
+    'select_type': 'duty_member',
+    'send_selection': True,
+    'is_in': True,
     'pre_func': str,
 }, {
-    'data_key': 'member2',
     'message': f"Please insert the second member name",
-    'pick_from': 'duty_members',
+    'data_key': 'member2',
+    'select_type': 'duty_member',
+    'send_selection': True,
+    'is_in': True,
     'pre_func': str,
 }, {
-    'single_message': 'Flatmates were switched for one duty!',
+    'single_message': 'Members were switched for one duty!',
 }]
 
-exchange_members_input_infos = [{
+exchange_member_input_infos = [{
+    'message': "Which member leaves?",
     'data_key': 'old_member',
-    'message': "Which flatmate leaves?",
-    'pick_from': 'members',
+    'select_type': 'member',
+    'send_selection': True,
+    'is_in': True,
     'pre_func': str,
 }, {
+    'message': f"Who's our new member?",
     'data_key': 'new_member',
-    'message': f"Who's our new flatmate?",
+    'select_type': 'member',
+    'send_selection': True,
+    'is_in': False,
     'pre_func': str,
 }, {
-    'single_message': 'Flatmates were exchanged for all duties!',
+    'single_message': 'Member was exchanged for all duties!',
+}]
+
+remove_member_input_infos = [{
+    'message': "Which member leaves?",
+    'data_key': 'old_member',
+    'select_type': 'member',
+    'send_selection': True,
+    'is_in': True,
+    'pre_func': str,
+}, {
+    'message': f"For what duty?",
+    'data_key': 'name',
+    'select_type': 'duty',
+    'send_selection': True,
+    'ALL': True,
+    'is_in': True,
+    'pre_func': str,
+}, {
+    'single_message': 'Member was removed!',
+}]
+
+
+add_member_input_infos = [{
+    'message': "Which member?",
+    'data_key': 'new_member',
+    'select_type': 'member',
+    'send_selection': True,
+    'is_in': False,
+    'pre_func': str,
+}, {
+    'message': f"For what duty?",
+    'data_key': 'name',
+    'select_type': 'duty',
+    'send_selection': True,
+    'ALL': True,
+    'is_in': True,
+    'pre_func': str,
+}, {
+    'single_message': 'Member was added!',
+}]
+
+
+add_duty_member_input_infos = [{
+    'message': f"In which duty do you want to add a member?",
+    'data_key': 'name',
+    'select_type': 'duty',
+    'send_selection': True,
+    'is_in': True,
+    'pre_func': str,
+}, {
+    'message': "Which member do you want to add?",
+    'data_key': 'new_member',
+    'select_type': 'duty_member',
+    'send_selection': True,
+    'is_in': False,
+    'pre_func': str,
+}, {
+    'single_message': 'Member was added!',
 }]

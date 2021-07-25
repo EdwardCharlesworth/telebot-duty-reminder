@@ -1,13 +1,6 @@
 import datetime
 import json
 
-def sort_dutys(dutys):
-    datetimes = [duty.start_time for duty in dutys]
-    ref = datetime.datetime.utcnow()
-    timedeltas = [(ref-dt).total_seconds() for dt in datetimes]
-    dutys = [duty for _,duty in sorted(zip(timedeltas,dutys))]
-    return dutys
-
 
 def print_duty_list(dutys):
     for duty in dutys:
@@ -57,6 +50,25 @@ class DutyObject:
         self.start_time = item['start_time']
         self.flatmates = item['flatmates']  # @Ed: don't change 'flatmates' to a different name!!!
         self.message = item['message']
+        self.additional_message = item.get('additional_message', None)
+
+    def __gt__(self, other):
+        # for sorting
+        if self.start_time > other.start_time:
+            return True
+        return False
+
+    def __lt__(self, other):
+        # for sorting
+        if self.start_time < other.start_time:
+            return True
+        return False
+
+    def make_message(self, flatmate):
+        full_message = self.message.format(name=self.name, flatmate=flatmate)
+        if self.additional_message:
+            full_message += '\n' + self.additional_message
+        return full_message
 
     def dump_information(self):
         message  = 'Chat ID: '+self.chat_id+';'
@@ -65,6 +77,7 @@ class DutyObject:
         message += 'Next Reminder Date: ' + self.start_time.strftime("%m/%d/%Y, %H:%M:%S") + ';'
         message += 'Flatmates: '+self.make_roster_string()+';'
         message += 'Reminder message: ('+self.message+').'
+        message += 'Additional message: ('+self.additional_message+').'
         return self.send_message(message)
 
     def should_print_now(self):
@@ -76,11 +89,13 @@ class DutyObject:
             return False
 
     def print_message_and_cycle(self):
-        member = self.flatmates.pop(0) #Pull the member whose turn it is
-        message = member+": "+self.message#Write the message
-        self.flatmates.append(member) #Add member whose turn it is to the roster
+        member = self.flatmates.pop(0)  # Pull the member whose turn it is
+        message = self.make_message(flatmate=member)  # Write the message
+        self.flatmates.append(member)  # Add member whose turn it is to the roster
         # Calculate the next time you need to write
         next_datetime = self.start_time + datetime.timedelta(days=self.frequency)
+        while next_datetime < datetime.datetime.utcnow():
+            next_datetime = next_datetime + datetime.timedelta(days=self.frequency)
         self.start_time = next_datetime # Set that time
         return self.send_message(message)
 
@@ -139,7 +154,7 @@ class DutyObject:
             message = "Could not find "+member+"."
             return self.send_message(message)
         else:
-            self.flatmates.pop(member)
+            self.flatmates.remove(member)
             message = "Mitglied "+member+" war von Listen entfernt. Tschüss "+member+"! Hat viel Spaß gemacht mit dir! Reinfolge ist jetzt: "
             message += self.make_roster_message()
             return self.send_message(message)
