@@ -12,7 +12,7 @@ from communicator.handle_flatmates import swap_members_input_infos, exchange_mem
     add_member_input_infos, add_duty_member_input_infos, remove_member_input_infos
 
 from reminder_temp.reminder import DutyObject, save_dutys, load_dutys
-from reminder_temp.general import find_duty, find_chat_dutys
+from reminder_temp.helper import find_duty, find_chat_dutys
 
 
 with open('./token.txt') as token_file:
