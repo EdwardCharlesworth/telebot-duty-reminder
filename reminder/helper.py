@@ -1,5 +1,5 @@
 from typing import List
-from reminder_temp.duty_class import DutyObject
+from reminder.duty_class import DutyObject
 
 
 def find_duty(duty_name: str, dutys: List[DutyObject]):

@@ -91,7 +91,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
         :param inner_message:
         :param current_info:    dict with infos how the next answer should be processed
-        :param data:            dict that should be filled for reminder_temp
+        :param data:            dict that should be filled for reminder
         :param infos:           list(dicts) that will be used to get user input (for data)
         :param first_message:   if False: will check for input in inner_message
         :param validation_list: list of (not-)possible inputs
@@ -151,7 +151,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                     next_info = infos.pop(0)
 
             except IndexError:
-                # end with sending data to reminder_temp
+                # end with sending data to reminder
                 if data['type'] != 'NOTHING':
                     queue.put(data)
                 return

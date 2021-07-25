@@ -11,8 +11,8 @@ from communicator.handle_duties import new_duty_input_infos, delete_duty_input_i
 from communicator.handle_flatmates import swap_members_input_infos, exchange_member_input_infos, \
     add_member_input_infos, add_duty_member_input_infos, remove_member_input_infos
 
-from reminder_temp.duty_class import DutyObject, save_dutys, load_dutys
-from reminder_temp.helper import find_duty, find_chat_dutys
+from reminder.duty_class import DutyObject, save_dutys, load_dutys
+from reminder.helper import find_duty, find_chat_dutys
 
 
 with open('./token.txt') as token_file:
@@ -115,12 +115,12 @@ def reminder(queue):
     while True:
 
         # Check if there's anything in the queue
-        queueWasNotEmpty = not queue.empty()
+        queueWasEmpty = True
         while not queue.empty():
-            print("We have new messages")
-
             #New messages!
             data = queue.get()
+            queueWasEmpty = False
+            print("New messages of type: "+data['type'])
 
             if any( [data[key] == None for key in data.keys()] ):
                 print("FOUND AN INCOMPLETE ENTRY")
@@ -164,7 +164,7 @@ def reminder(queue):
                 duty = find_duty(data['name'], chat_dutys)
                 duty.additional_message = data['message']
 
-        if queueWasNotEmpty:
+        if not queueWasEmpty:
             dutys = sorted(dutys)
 
         # Check if you have any dutys at all
@@ -186,7 +186,7 @@ def reminder(queue):
         # Add all the dutys that were printed to the end of the list
         # for duty in dutysDone: dutys.append(duty)
         dutys = sorted(dutys)
-        if queueWasNotEmpty or something_was_updated:
+        if not queueWasEmpty or something_was_updated:
             save_dutys(dutys)
 
         # Wait until it's time to check things again

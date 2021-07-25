@@ -15,11 +15,12 @@ def myconverter(o):
 def save_dutys(dutys):
     with open("../dutybot_database.json", "w") as file:
         # ensure that bot is not dumped (not possible)
-        file.write(json.dumps([
+        dump_str = json.dumps([
             {key: value
              for key, value in duty.__dict__.items() if key != 'bot'}
             for duty in dutys
-        ], default=myconverter))
+        ], default=myconverter)
+        file.write(dump_str)
 
 def load_dutys(bot):
     databaseName = "dutybot_database.json"
