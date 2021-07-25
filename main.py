@@ -80,7 +80,7 @@ def communicator(queue):
 
     # general
 
-    @bot.message_handler(commands=['start, greet'])
+    @bot.message_handler(commands=['start', 'greet'])
     def greet(message):
         c_greet(bot, message)
         print(message)
