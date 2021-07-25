@@ -192,12 +192,9 @@ def reminder(queue):
         time.sleep(WAIT_TIME) 
 
 
-    
-
-
-
-
 # Create the shared queue and launch both threads
+
+
 q = Queue()
 t1 = Thread(target=communicator, args=(q,))
 t2 = Thread(target=reminder, args=(q,))

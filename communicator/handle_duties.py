@@ -82,7 +82,7 @@ list_duty_input_infos = [{
     'pre_func': str,
 }, {
     'single_message': """
-Every {frequency} days (next time: {start_time}), {flatmates} will get notified in this order.
+Every {frequency} days - next time: {start_time} (GMT) - {flatmates} will get notified in this order.
 """,
     'insert_info': 'duty',
 }]

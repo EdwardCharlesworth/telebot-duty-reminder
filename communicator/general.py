@@ -8,7 +8,7 @@ from communicator.helper import get_default_data, load_dutys_of_chat, \
     find_duty_in_duty_dicts, find_all_members_of_chat, get_duty_names
 
 
-add_abort_message = "\n'exit' to abort"
+add_abort_message = "\nstart with '/' - '/exit' to abort"
 
 
 class InputError(Exception):
@@ -111,7 +111,9 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                     format_dict = {}
                     if next_info.get('insert_info', False):
                         format_dict = find_duty_in_duty_dicts(data['name'], chat_duty_dicts)
-                    _ = bot.send_message(chat_id, next_info['single_message'].format(**format_dict))
+
+                    message = next_info['single_message'].format(**format_dict) + add_abort_message
+                    _ = bot.send_message(chat_id, message)
                     next_info = infos.pop(0)
             except IndexError:
                 # end with sending data to reminder_temp
@@ -148,7 +150,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
         # build message text
         message_text = next_info['message']+add_abort_message
         if send_selection and len(select_list) > 0:
-            message_text += pre_list_message_text
+            message_text += '\n' + pre_list_message_text
             for value in select_list:
                 message_text += '\n'
                 message_text += str(value)
