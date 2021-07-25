@@ -3,6 +3,8 @@ from threading import Thread
 import telebot
 import time
 
+from custom_telebot import CustomTeleBot
+
 from communicator.helper import load_dutys_of_chat
 from communicator.general import c_greet, get_user_input
 from communicator.handle_duties import new_duty_input_infos, delete_duty_input_infos, \
@@ -18,7 +20,7 @@ with open('./token.txt') as token_file:
     for token in token_file:
         break
     token = token.rstrip()
-    bot = telebot.TeleBot(token)
+    bot = CustomTeleBot(token, num_threads=4)
 
 
 # A thread that communicates with chats

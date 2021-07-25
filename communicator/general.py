@@ -1,14 +1,12 @@
 import telebot
 import json
 from typing import List
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from config import maximum_input_trys
+from config import add_abort_message
 
 from communicator.helper import get_default_data, load_dutys_of_chat, \
     find_duty_in_duty_dicts, find_all_members_of_chat, get_duty_names
-
-
-add_abort_message = "\nstart with '/' - '/exit' to abort"
 
 
 class InputError(Exception):
@@ -23,11 +21,32 @@ class IsNotPresent(InputError):
     pass
 
 
+def get_input_from_call_or_message(call_or_msg):
+    if isinstance(call_or_msg, telebot.types.CallbackQuery):
+        value = call_or_msg.data
+    elif isinstance(call_or_msg, telebot.types.Message):
+        value = call_or_msg.text
+        if value.startswith('/'):
+            value = value[1:]
+    else:
+        raise InputError
+    return value
+
+
+def gen_markup(options: List[str], row_width=3):
+    markup = InlineKeyboardMarkup(row_width=row_width)
+    keyboard_buttons = []
+    for option in options:
+        keyboard_buttons.append(InlineKeyboardButton(option, callback_data=option))
+    markup.add(*keyboard_buttons)
+    return markup
+
+
 def check_for_exit(bot):
     def inner_check_for_exit(func):
         def wrapper(*args, **kwargs):
             message = args[0]
-            value = message.text[1:]
+            value = get_input_from_call_or_message(message)
             if value == 'exit':
                 bot.send_message(message.chat.id, 'Command was aborted')
                 return
@@ -79,7 +98,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
         if not first_message:
             try:
                 # get input
-                value = inner_message.text[1:]
+                value = get_input_from_call_or_message(inner_message)
                 # apply individual preprocessing functions to input value
                 post_value = current_info['pre_func'](value)
                 data[current_info['data_key']] = post_value
@@ -92,15 +111,16 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
             except Exception as e:
                 print(e)
-                if isinstance(e, IsNotPresent):
-                    sent_inner_msg = bot.reply_to(inner_message, 'name does not exist - please try again')
-                elif isinstance(e, AlreadyExists):
-                    sent_inner_msg = bot.reply_to(inner_message, 'name already exists - please try again')
-                else:
-                    sent_inner_msg = bot.reply_to(inner_message, 'Message could not be processed - please try again')
-                bot.register_next_step_handler(sent_inner_msg, data_key_handler, current_info, data, infos,
-                                               first_message=first_message, validation_list=validation_list,
-                                               is_in=is_in)
+                if not isinstance(inner_message, telebot.types.CallbackQuery):
+                    if isinstance(e, IsNotPresent):
+                        sent_inner_msg = bot.reply_to(inner_message, 'name does not exist - please try again')
+                    elif isinstance(e, AlreadyExists):
+                        sent_inner_msg = bot.reply_to(inner_message, 'name already exists - please try again')
+                    else:
+                        sent_inner_msg = bot.reply_to(inner_message, 'Message could not be processed - please try again')
+                    bot.register_next_step_handler(sent_inner_msg, data_key_handler, current_info, data, infos,
+                                                   first_message=first_message, validation_list=validation_list,
+                                                   is_in=is_in)
                 return
 
             # get next info
@@ -126,6 +146,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
 
         send_selection = next_info.get('send_selection', None)
         is_in = next_info.get('is_in', None)
+        keyboard_input = True if send_selection and is_in else False
         select_type = next_info.get('select_type', None)
         all_selections = next_info.get('ALL', None)
 
@@ -151,29 +172,30 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
         message_text = next_info['message']+add_abort_message
         if send_selection and len(select_list) > 0:
             message_text += '\n' + pre_list_message_text
-            for value in select_list:
-                message_text += '\n'
-                message_text += str(value)
-            if all_selections:
-                message_text += '\n"ALL" for all'
+            if not keyboard_input:
+                for value in select_list:
+                    message_text += '\n'
+                    message_text += str(value)
+                if all_selections:
+                    message_text += '\n"ALL" for all'
 
         validation_list = select_list
         if all_selections:
             validation_list.append('ALL')
 
-        sent_inner_msg = bot.send_message(chat_id, message_text)
-        bot.register_next_step_handler(sent_inner_msg, data_key_handler, next_info, data, infos,
-                                       validation_list=validation_list, is_in=is_in)
+        @bot.callback_query_handler(func=lambda call: call.message.chat.id == chat_id, chat_id=chat_id)
+        def callback_query(call):
+            data_key_handler(call, next_info, data, infos,
+                             validation_list=validation_list, is_in=is_in)
+            print(validation_list)
+            bot.answer_callback_query(call.id, call.data)
+
+        if keyboard_input:
+            bot.send_message(chat_id, message_text, reply_markup=gen_markup(validation_list))
+        else:
+            sent_inner_msg = bot.send_message(chat_id, message_text)
+            bot.register_next_step_handler(sent_inner_msg, data_key_handler, next_info, data, infos,
+                                           validation_list=validation_list, is_in=is_in)
 
     current_info = infos.pop(0)
     data_key_handler(message, current_info, data, infos, first_message=True)
-
-
-### for later use
-#from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-#def gen_markup():
-#    markup = InlineKeyboardMarkup()
-#    markup.row_width = 2
-#    markup.add(InlineKeyboardButton("Yes", callback_data="cb_yes"),
-#                               InlineKeyboardButton("No", callback_data="cb_no"))
-#    return markup
