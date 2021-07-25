@@ -158,13 +158,13 @@ def reminder(queue):
                 # add member
                 elif data['type'] == 'add_member':
                     for duty in find_chat_dutys(data['chat_id'], dutys):
-                        if data['name'] == 'ALL' or data['name'] == duty['name']:
+                        if data['name'] == 'ALL' or data['name'] == duty.name:
                             duty.add_member(data['new_member'])
 
                 # delete member
                 elif data['type'] == 'remove_member':
                     for duty in find_chat_dutys(data['chat_id'], dutys):
-                        if data['name'] == 'ALL' or data['name'] == duty['name']:
+                        if data['name'] == 'ALL' or data['name'] == duty.name:
                             duty.delete_member(data['old_member'])
 
                 # exchange member for all duties
