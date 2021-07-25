@@ -20,7 +20,7 @@ with open('./token.txt') as token_file:
     for token in token_file:
         break
     token = token.rstrip()
-    bot = CustomTeleBot(token, num_threads=4)
+    bot = CustomTeleBot(token, num_threads=2)
 
 
 # A thread that communicates with chats
@@ -112,7 +112,7 @@ def reminder(queue):
 
     dutys = load_dutys(bot)
 
-    WAIT_TIME = 1  # seconds
+    WAIT_TIME = 10  # seconds
     while True:
 
         # Check if there's anything in the queue
@@ -171,11 +171,10 @@ def reminder(queue):
         # Check if you have any dutys at all
         if len(dutys)==0:
             # print("No dutys found. Waiting 1 second.")
-            time.sleep(1)  # TODO finalize
+            time.sleep(10)
             continue
         
         # Check if anything needs to run now
-        dutysDone = []
         something_was_updated = False
         # print("Looking through dutys")
         for duty in dutys:

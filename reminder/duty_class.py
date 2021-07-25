@@ -14,7 +14,7 @@ class DutyObject:
         self.chat_id = item['chat_id']  # @Ed: don't change 'chat_id' to a different name!!!
         self.name = item['name']  # @Ed: don't change 'name' to a different name!!!
         if isinstance(item['frequency'], datetime.timedelta):
-            self.frequency = item['frequency'].days/(24*60*4)  # TODO finalize
+            self.frequency = item['frequency'].days  # /(24*60*4)
         else:
             self.frequency = item['frequency']
         self.start_time = item['start_time']
