@@ -1,10 +1,4 @@
 import datetime
-import json
-
-
-def print_duty_list(dutys):
-    for duty in dutys:
-        print(duty.dump_information())
 
 
 class DutyObject:
@@ -40,16 +34,6 @@ class DutyObject:
             full_message += '\n' + self.additional_message
         return full_message
 
-    def dump_information(self):
-        message  = 'Chat ID: '+self.chat_id+';'
-        message += 'Duty Name: '+self.name+';'
-        message += 'Frequency: '+self.frequency+';'
-        message += 'Next Reminder Date: ' + self.start_time.strftime("%m/%d/%Y, %H:%M:%S") + ';'
-        message += 'Flatmates: '+self.make_roster_string()+';'
-        message += 'Reminder message: ('+self.message+').'
-        message += 'Additional message: ('+self.additional_message+').'
-        return self.send_message(message)
-
     def should_print_now(self):
         goal = self.start_time
         now = datetime.datetime.utcnow()
@@ -73,15 +57,6 @@ class DutyObject:
         message = ""
         for member in self.flatmates: message += member + ' '
         return message
-
-    def change_roster(self):
-        # self.roster = whatever function basti has
-        return "Can't do this yet. Use whatever function Basti wrote to read in the flatmates."
-
-    def change_message(self,message):
-        self.message = message
-        message = "Message is now: "+message
-        return self.send_message(message)
 
     def swap_members(self,member1,member2):
         #Switching order of existing members
@@ -138,6 +113,3 @@ class DutyObject:
 
     def send_message(self, message):
         self.bot.send_message(self.chat_id, message)
-
-
-pass

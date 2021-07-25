@@ -1,5 +1,5 @@
 import telebot
-import json
+import logging
 from typing import List
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -114,7 +114,7 @@ def get_user_input(bot, queue, message, infos: List[dict], data_type: str = None
                     raise AlreadyExists(f'{post_value} is in {validation_list}')
 
             except Exception as e:
-                print(e)
+                logging.error(e)
                 if not isinstance(inner_message, telebot.types.CallbackQuery):
                     if isinstance(e, IsNotPresent):
                         sent_inner_msg = bot.reply_to(inner_message, 'name does not exist - please try again')

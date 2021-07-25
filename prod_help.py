@@ -1,12 +1,24 @@
+import logging
+
+
 def endless_try(func):
     def inner(*args, **kwargs):
         while(True):
             try:
                 func(*args, **kwargs)
-                print(f'{func.__name__} end')
+                logging.info(f'{func.__name__} end')
 
             except Exception as e:
-                print(e)
-                print(f'{func.__name__} restart')
+                logging.error(e)
+                logging.info(f'{func.__name__} restart')
+
+    return inner
+
+
+def log_function(func):
+    def inner(*args, **kwargs):
+        logging.info(f'{func.__name__} start')
+        func(*args, **kwargs)
+        logging.info(f'{func.__name__} end')
 
     return inner

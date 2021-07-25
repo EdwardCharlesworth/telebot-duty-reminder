@@ -1,5 +1,6 @@
 import json
 import datetime
+import logging
 
 from config import default_dump_path
 
@@ -37,7 +38,7 @@ def load_dutys(bot):
         with open(databaseName,"r") as file:
             duty_dicts = json.load(file)
     except:
-        print("Could not find database ("+databaseName+"). Duty list is empty.")
+        logging.warning("Could not find database ("+databaseName+"). Duty list is empty.")
         duty_dicts = []
 
     dutys = []
