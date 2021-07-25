@@ -3,6 +3,7 @@ from threading import Thread
 import time
 
 from custom_telebot import CustomTeleBot
+from dump_and_load_json import load_dutys, save_dutys
 
 from communicator.helper import load_dutys_of_chat
 from communicator.general import c_greet, get_user_input
@@ -11,7 +12,7 @@ from communicator.handle_duties import new_duty_input_infos, delete_duty_input_i
 from communicator.handle_flatmates import swap_members_input_infos, exchange_member_input_infos, \
     add_member_input_infos, add_duty_member_input_infos, remove_member_input_infos
 
-from reminder.duty_class import DutyObject, save_dutys, load_dutys
+from reminder.duty_class import DutyObject
 from reminder.helper import find_duty, find_chat_dutys
 
 

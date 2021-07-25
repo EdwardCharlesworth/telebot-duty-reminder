@@ -1,4 +1,4 @@
-from dump_and_load_json import load_dutys
+from dump_and_load_json import load_duty_dicts
 
 
 def get_default_data(data_type):
@@ -9,7 +9,7 @@ def get_default_data(data_type):
 
 
 def load_dutys_of_chat(chat_id):
-    duty_dicts = load_dutys()
+    duty_dicts = load_duty_dicts()
 
     chat_duty_dicts = []
     for duty_dict in duty_dicts:
